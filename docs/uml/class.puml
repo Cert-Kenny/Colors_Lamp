@@ -1,0 +1,47 @@
+@startuml
+class User {
+  +id : int
+  +firstName : string
+  +lastName : string
+  +login : string
+  +password : string
+}
+
+class Color {
+  +id : int
+  +userId : int
+  +color : string
+}
+
+class FrontendUI {
+  +doLogin()
+  +addColor()
+  +searchColor()
+  +doLogout()
+}
+
+class LoginAPI {
+  +authenticate(login, password) : JSON
+}
+
+class AddColorAPI {
+  +addColor(userId, color) : JSON
+}
+
+class SearchColorsAPI {
+  +searchColors(userId, search) : JSON
+}
+
+class MySQLDatabase {
+  +Users
+  +Colors
+}
+
+User "1" -- "0..*" Color : owns
+FrontendUI ..> LoginAPI : POST JSON
+FrontendUI ..> AddColorAPI : POST JSON
+FrontendUI ..> SearchColorsAPI : POST JSON
+LoginAPI ..> MySQLDatabase : query Users
+AddColorAPI ..> MySQLDatabase : insert Color
+SearchColorsAPI ..> MySQLDatabase : search Colors
+@enduml

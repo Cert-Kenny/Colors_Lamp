@@ -1,0 +1,26 @@
+@startuml
+start
+:Open COLORS website;
+:Enter username and password;
+:Submit login request;
+if (Credentials valid?) then (Yes)
+  :Display color management page;
+  if (User action?) then (Add Color)
+    :Enter a color;
+    :Send AddColor API request;
+    :Store color for logged-in user in MySQL;
+    :Display success message;
+  elseif (Search Colors)
+    :Enter partial search text;
+    :Send SearchColors API request;
+    :Query matching colors for logged-in user;
+    :Display matching colors;
+  else (Log Out)
+    :Clear login cookie/data;
+    :Return to login page;
+  endif
+else (No)
+  :Display invalid username/password message;
+endif
+stop
+@enduml
