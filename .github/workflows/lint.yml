@@ -1,11 +1,11 @@
-name: Lint
+name: Lint and Test
 
 on:
   push:
   pull_request:
 
 jobs:
-  lint:
+  lint-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,6 +16,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Install linters
         run: |
@@ -29,4 +32,6 @@ jobs:
 
       - name: Lint CSS
         run: stylelint "css/**/*.css"
-    
+
+      - name: Run automated tests
+        run: npm test
