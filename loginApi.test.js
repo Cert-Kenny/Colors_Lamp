@@ -1,7 +1,7 @@
 test("Login API returns valid JSON", async () =>
 {
     const response = await fetch(
-        "http://notworthmoney.shop/LAMPAPI/Login.php",
+        "https://notworthmoney.shop/LAMPAPI/Login.php",
         {
             method: "POST",
             headers:
