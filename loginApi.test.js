@@ -1,7 +1,7 @@
 test("Login API returns valid JSON", async () =>
 {
     const response = await fetch(
-        "https://notworthmoney.shop/LAMPAPI/Login.php",
+        "http://127.0.0.1:8000/LAMPAPI/Login.php",
         {
             method: "POST",
             headers:
@@ -9,17 +9,22 @@ test("Login API returns valid JSON", async () =>
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(
-                {
-                    login: "wronguser",
-                    password: "wrongpass"
-                }
-            )
+            {
+                login: "testuser",
+                password: "Test123"
+            })
         }
     );
+
+    expect(response.ok).toBe(true);
 
     const data = await response.json();
 
     expect(data).toHaveProperty("id");
+    expect(data).toHaveProperty("firstName");
+    expect(data).toHaveProperty("lastName");
     expect(data).toHaveProperty("error");
+
+    expect(data.id).toBeGreaterThan(0);
 });
 
