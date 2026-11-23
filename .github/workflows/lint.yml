@@ -85,6 +85,12 @@ jobs:
           sleep 2
 
       - name: Run automated tests
-        run: npm test
+        run: |
+          npm test || {
+            echo "----- PHP SERVER LOG -----"
+            cat /tmp/php-server.log
+            exit 1
+          }
+          
 
     
