@@ -47,6 +47,11 @@ jobs:
       - name: Lint CSS
         run: stylelint "css/**/*.css"
 
+      - name: Install PHP MySQL extension
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php-mysql
+
       - name: Create test database
         run: |
           mysql -h 127.0.0.1 -uroot -proot COP4331 <<'SQL'
@@ -80,6 +85,12 @@ jobs:
           sleep 2
 
       - name: Run automated tests
-        run: npm test
+        run: |
+          npm test || {
+            echo "----- PHP SERVER LOG -----"
+            cat /tmp/php-server.log
+            exit 1
+          }
+          
 
     
