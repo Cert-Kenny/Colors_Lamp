@@ -1,12 +1,26 @@
-name: Lint
+name: Lint and Test
 
 on:
   push:
   pull_request:
 
 jobs:
-  lint:
+  lint-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: COP4331
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
       - name: Checkout repository
@@ -16,6 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Install linters
         run: |
@@ -29,4 +46,40 @@ jobs:
 
       - name: Lint CSS
         run: stylelint "css/**/*.css"
-    
+
+      - name: Create test database
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot COP4331 <<'SQL'
+          CREATE TABLE Users (
+            ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            FirstName VARCHAR(50) NOT NULL,
+            LastName VARCHAR(50) NOT NULL,
+            Login VARCHAR(50) NOT NULL UNIQUE,
+            Password VARCHAR(50) NOT NULL
+          );
+
+          INSERT INTO Users (FirstName, LastName, Login, Password)
+          VALUES ('Test', 'User', 'testuser', 'Test123');
+          SQL
+
+      - name: Create CI database configuration
+        run: |
+          cat > LAMPAPI/config.php <<'PHP'
+          <?php
+          return [
+              'host' => '127.0.0.1',
+              'user' => 'root',
+              'pass' => 'root',
+              'name' => 'COP4331'
+          ];
+          PHP
+
+      - name: Start PHP test server
+        run: |
+          php -S 127.0.0.1:8000 -t . > /tmp/php-server.log 2>&1 &
+          sleep 2
+
+      - name: Run automated tests
+        run: npm test
+
+        
